@@ -1,6 +1,8 @@
 package by.itstep.vikvik.javalessons.lesson42.homeWork.writersTask.model;
 
-import by.itstep.vikvik.javalessons.lesson42.homeWork.writersTask.view.Printer;
+import by.itstep.vikvik.javalessons.lesson42.homeWork.writersTask.controller.Main;
+import by.itstep.vikvik.javalessons.lesson42.homeWork.writersTask.view.PrinterToConsole;
+import by.itstep.vikvik.javalessons.lesson42.homeWork.writersTask.view.PrinterToFile;
 
 public class Writer implements Runnable {
     String writerName;
@@ -32,14 +34,17 @@ public class Writer implements Runnable {
 
     @Override
     public void run() {
-        Thread consoleThread = new Thread();
-        Thread fileThread = new Thread();
-        try {
+        Thread consoleThread = new Thread(new PrinterToConsole(this));
+        Main.commonThreadCount++;
+        consoleThread.setName(this.getWriterName() + " toConsoleThread");
+        System.out.println("\nAdded new thread = " + consoleThread.getName());
 
-            Printer.printToConsole(this);
-            Printer.printToFile(this);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        Thread fileThread = new Thread(new PrinterToFile(this));
+        Main.commonThreadCount++;
+        fileThread.setName(this.getWriterName() + " toFileThread");
+        System.out.println("\nAdded new thread = " + fileThread.getName());
+
+        consoleThread.start();
+        fileThread.start();
     }
 }

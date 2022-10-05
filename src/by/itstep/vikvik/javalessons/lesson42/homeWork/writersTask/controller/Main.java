@@ -4,10 +4,16 @@ package by.itstep.vikvik.javalessons.lesson42.homeWork.writersTask.controller;
 import by.itstep.vikvik.javalessons.lesson42.homeWork.writersTask.model.Writer;
 
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static volatile int commonThreadCount = 0;
+
+    public static void main(String[] args) throws InterruptedException {
+
+        System.out.println("Common thread count = " + commonThreadCount);
+
         Thread mainThread = Thread.currentThread();
         System.out.println(mainThread.getName() + " started");
         ArrayList<Writer> writerArrayList = new ArrayList<>();
@@ -23,17 +29,18 @@ public class Main {
         for (Writer writer : writerArrayList) {
 
             Thread thread = new Thread(writer);
+            commonThreadCount++;
+            thread.setName(writer.getWriterName() + " Thread");
             threads.add(thread);
 
-            if (writer.getWriterName().equals("Колас")) {
-                thread.setPriority(Thread.MAX_PRIORITY);
-            }
-
+            System.out.println("\nAdded new thread = " + thread.getName());
+            TimeUnit.SECONDS.sleep(2);
             thread.start();
 
         }
 
         System.out.println(mainThread.getName() + " finished");
+        System.out.println("Common thread count = " + commonThreadCount);
     }
 
 }
